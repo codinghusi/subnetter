@@ -125,8 +125,8 @@ fn main() {
 
         if with_csv {
             println!(
-                "{},{},{},{},{},{}",
-                network.name, network.host_count, current_ip.network_ip(), current_ip.mask, current_ip.first_host(), current_ip.last_host()
+                "{},{},{},{},{},{},{}",
+                network.name, network.host_count, current_ip.network_ip(), current_ip.mask, current_ip.first_host(), current_ip.last_host(), current_ip.broadcast_ip()
             );
         } else {
             println!(
