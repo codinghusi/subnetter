@@ -83,7 +83,6 @@ fn main() {
         ("VN4", 2), ("VN5", 2), ("VN6", 2),
         ("VN7", 2), ("VN8", 2), ("VN9", 2),
         ("Webserver", 2),
-        ("Internet Prov.", 2),
     ].into_iter()
         .map(|(name, host_count)| NetworkRequirement {
             name: String::from(name),
