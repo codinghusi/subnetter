@@ -44,11 +44,11 @@ impl SubnettedIP {
     }
 
     pub fn broadcast_ip(&self) -> IPv4 {
-        self.nth_ip(self.mask.ip_count())
+        self.nth_ip(self.mask.ip_count() - 1)
     }
 
     pub fn last_host(&self) -> IPv4 {
-        self.nth_ip(self.mask.ip_count() - 1)
+        self.nth_ip(self.mask.ip_count() - 2)
     }
 }
 

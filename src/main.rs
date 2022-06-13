@@ -103,19 +103,19 @@ fn main() {
 
     if with_csv {
         println!(
-            "{},{},{},{},{},{}",
-            "Netzname", "Anzahl der Rechner", "Netzwerkadresse", "Subnetzmaske", "Erste IP", "Letzte IP"
+            "{},{},{},{},{},{},{}",
+            "Netzname", "Anzahl der Rechner", "Netzwerkadresse", "Subnetzmaske", "Erste IP", "Letzte IP", "Broadcastadresse"
         )
     } else {
         println!(
-            "{: <15} | {: <6} | {: <15} | {: <15} | {: <15} | {: <15}",
-            "Netzname", "#Hosts", "Netzwerkadresse", "Subnetzmaske", "Erste IP", "Letzte IP"
+            "{: <15} | {: <6} | {: <15} | {: <15} | {: <15} | {: <15} | {: <15}",
+            "Netzname", "#Hosts", "Netzwerkadresse", "Subnetzmaske", "Erste IP", "Letzte IP", "Broadcastadresse"
         );
     }
 
 
     if !with_csv {
-        println!("{}", "=".repeat(17 * 5 + 5 + 6));
+        println!("{}", "=".repeat(17 * 6 + 5 + 6));
     }
 
     let mut current_ip = scope.clone();
@@ -130,8 +130,8 @@ fn main() {
             );
         } else {
             println!(
-                "{: <15} | {: >6} | {: <15} | {: <15} | {: <15} | {: <15}",
-                network.name, network.host_count, current_ip.network_ip(), current_ip.mask, current_ip.first_host(), current_ip.last_host()
+                "{: <15} | {: >6} | {: <15} | {: <15} | {: <15} | {: <15} | {: <15}",
+                network.name, network.host_count, current_ip.network_ip(), current_ip.mask, current_ip.first_host(), current_ip.last_host(), current_ip.broadcast_ip()
             );
         }
 
