@@ -1,5 +1,7 @@
 use std::cmp::Reverse;
 use std::fmt::{Debug, Display, Formatter};
+use clap::Parser;
+use regex::Regex;
 
 mod ipv4;
 mod subnetmask;
@@ -21,16 +23,45 @@ fn get_num(name: &str) -> u8 {
     (first + second) / 2
 }
 
-fn get_ip(prefix: u8, name: (&str, &str)) -> SubnettedIP {
+fn get_ip(prefix: u8, name: (String, String)) -> SubnettedIP {
     SubnettedIP {
-        ip: IPv4(get_num(name.0), get_num(name.1), 0, 0),
+        ip: IPv4(get_num(&name.0), get_num(&name.1), 0, 0),
         mask: SubnetMask(prefix)
     }
 }
 
+#[derive(Parser, Debug)]
+#[clap(author, version, about, long_about = None)]
+struct Args {
+    /// Eingabe des Vornamens
+    #[clap(short, long, value_parser)]
+    vorname: String,
+
+    /// Eingabe des Nachnamens
+    #[clap(short, long, value_parser)]
+    nachname: String,
+
+    /// Ausgabe in CSV-Format
+    #[clap(long, value_parser, default_value_t = false)]
+    csv: bool,
+
+    /// Auswahl des Prefixes (Wert von 0 bis 32)
+    #[clap(short, long, value_parser, default_value_t = 12)]
+    prefix: u8,
+}
+
 fn main() {
-    let prefix = 12;
-    let name = ("Vorname", "Nachname");
+    // let prefix = 12;
+    // let name = (String::from("Vorname"), String::from("Nachname"));
+    let args = Args::parse();
+
+    let prefix = args.prefix;
+    let name = (args.vorname, args.nachname);
+    let with_csv = args.csv;
+
+    if prefix > 32 {
+        panic!("Der Wert von Prefix muss zwischen 0 und 32 sein.");
+    }
 
     // Specific
     let scope = get_ip(prefix, name).into_network_ip();
@@ -69,27 +100,42 @@ fn main() {
     println!("--------------------------------------------------");
     println!(" Netzwerk mit IP-Bereich {} ", scope);
     println!("--------------------------------------------------");
-    println!(
-        "{: <15} | {: <15} | {: <15} | {: <15} | {: <15}",
-        "Netzname", "Netzwerkadresse", "Subnetzmaske", "Erste IP", "Letzte IP"
-    );
+    println!();
 
-    println!("{}", "=".repeat(17 * 5 + 4));
+    if with_csv {
+        println!(
+            "{},{},{},{},{},{}",
+            "Netzname", "Anzahl der Rechner", "Netzwerkadresse", "Subnetzmaske", "Erste IP", "Letzte IP"
+        )
+    } else {
+        println!(
+            "{: <15} | {: <6} | {: <15} | {: <15} | {: <15} | {: <15}",
+            "Netzname", "#Hosts", "Netzwerkadresse", "Subnetzmaske", "Erste IP", "Letzte IP"
+        );
+    }
+
+
+    if !with_csv {
+        println!("{}", "=".repeat(17 * 5 + 5 + 6));
+    }
 
     let mut current_ip = scope.clone();
     for network in networks {
         let snm = SubnetMask::by_host_count(network.host_count);
         current_ip.mask = snm;
-        println!(
-            "{: <15} | {: <15} | {: <15} | {: <15} | {: <15}",
-            network.name, current_ip.network_ip(), current_ip.mask, current_ip.first_host(), current_ip.last_host()
-        );
 
-        // println!("{}", current_ip);
+        if with_csv {
+            println!(
+                "{},{},{},{},{},{}",
+                network.name, network.host_count, current_ip.network_ip(), current_ip.mask, current_ip.first_host(), current_ip.last_host()
+            );
+        } else {
+            println!(
+                "{: <15} | {: <6} | {: <15} | {: <15} | {: <15} | {: <15}",
+                network.name, network.host_count, current_ip.network_ip(), current_ip.mask, current_ip.first_host(), current_ip.last_host()
+            );
+        }
 
-        // println!("{:b}", snm.raw());
-        // println!("0{:b}", current_ip.ip.raw());
-        // println!("0{:b}", snm.ip_count());
 
         current_ip = current_ip.into_next_network_ip(1);
     }
