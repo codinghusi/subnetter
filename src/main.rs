@@ -131,7 +131,7 @@ fn main() {
             );
         } else {
             println!(
-                "{: <15} | {: <6} | {: <15} | {: <15} | {: <15} | {: <15}",
+                "{: <15} | {: >6} | {: <15} | {: <15} | {: <15} | {: <15}",
                 network.name, network.host_count, current_ip.network_ip(), current_ip.mask, current_ip.first_host(), current_ip.last_host()
             );
         }
