@@ -13,12 +13,6 @@ impl SubnettedIP {
         let bitmask = self.mask.raw();
         let adder = self.mask.ip_count();
         let raw = self.ip.raw();
-
-        // println!("{:<10} {}", "prefix: ", self.mask.0);
-        // println!("{:<10} {:#034b}", "bitmask: ", bitmask);
-        // println!("{:<10} {:#034b}", "adder: ", adder);
-        // println!("{:<10} {:#034b}", "raw: ", raw);
-
         IPv4::from_raw((raw & bitmask) + adder * n)
     }
 

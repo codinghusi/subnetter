@@ -6,7 +6,7 @@ pub struct SubnetMask(pub u8);
 
 impl SubnetMask {
     pub fn by_host_count(count: u32) -> Self {
-        let host_bits = (count as f32).log2().ceil() as u8;
+        let host_bits = ((count + 2) as f32).log2().ceil() as u8;
         let network_bits = 32 - host_bits;
         SubnetMask(network_bits)
     }
