@@ -14,12 +14,26 @@ struct NetworkRequirement {
     pub host_count: u32
 }
 
+fn get_num(name: &str) -> u8 {
+    let mut chars = name.chars();
+    let first = chars.next().unwrap() as u8;
+    let second = chars.next().unwrap() as u8;
+    (first + second) / 2
+}
+
+fn get_ip(prefix: u8, name: (&str, &str)) -> SubnettedIP {
+    SubnettedIP {
+        ip: IPv4(get_num(name.0), get_num(name.1), 0, 0),
+        mask: SubnetMask(prefix)
+    }
+}
+
 fn main() {
+    let prefix = 12;
+    let name = ("Vorname", "Nachname");
+
     // Specific
-    let scope = SubnettedIP {
-        ip: IPv4(86,80,0,0),
-        mask: SubnetMask(16)
-    }.into_network_ip();
+    let scope = get_ip(prefix, name).into_network_ip();
 
     let mut networks = vec![
         ("Aachen 1", 20_000),
